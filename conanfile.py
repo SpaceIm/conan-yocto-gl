@@ -1,4 +1,5 @@
 from conans import ConanFile, CMake, tools
+from conans.errors import ConanInvalidConfiguration
 
 required_conan_version = ">=1.33.0"
 
@@ -42,6 +43,31 @@ class YoctoglConan(ConanFile):
         self.requires("nlohmann_json/3.10.3")
         self.requires("stb/cci.20210713")
         # tinyexr is also a dependency but vendored and modified
+
+    @property
+    def _compilers_minimum_version(self):
+        return {
+            "Visual Studio": "15.7",
+            "gcc": "8.1",
+            "clang": "9",
+            "apple-clang": "11"
+        }
+
+    def validate(self):
+        if self.settings.compiler.get_safe("cppstd"):
+            tools.check_min_cppstd(self, 17)
+
+        def lazy_lt_semver(v1, v2):
+            lv1 = [int(v) for v in v1.split(".")]
+            lv2 = [int(v) for v in v2.split(".")]
+            min_length = min(len(lv1), len(lv2))
+            return lv1[:min_length] < lv2[:min_length]
+
+        minimum_version = self._compilers_minimum_version.get(str(self.settings.compiler), None)
+        if minimum_version and lazy_lt_semver(str(self.settings.compiler.version), minimum_version):
+            raise ConanInvalidConfiguration(
+                "{} {} requires C++17, which your compiler does not support.".format(self.name, self.version)
+            )
 
     def source(self):
         tools.get(**self.conan_data["sources"][self.version],
