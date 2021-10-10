@@ -1,5 +1,3 @@
-diff --git a/CMakeLists.txt b/CMakeLists.txt
-index df8ca9b7..16126cc9 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -26,6 +26,4 @@ if(GENERATOR_IS_MULTI_CONFIG)
@@ -9,8 +7,6 @@ index df8ca9b7..16126cc9 100644
 -add_subdirectory(exts)
  add_subdirectory(libs)
 -add_subdirectory(apps)
-diff --git a/libs/yocto/CMakeLists.txt b/libs/yocto/CMakeLists.txt
-index 5f9b85a4..98b46e7e 100644
 --- a/libs/yocto/CMakeLists.txt
 +++ b/libs/yocto/CMakeLists.txt
 @@ -11,13 +11,26 @@ add_library(yocto
@@ -43,8 +39,6 @@ index 5f9b85a4..98b46e7e 100644
  
  if(UNIX AND NOT APPLE)
    find_package(Threads REQUIRED)
-diff --git a/libs/yocto/yocto_cli.h b/libs/yocto/yocto_cli.h
-index 867d0ec0..9e346aa3 100644
 --- a/libs/yocto/yocto_cli.h
 +++ b/libs/yocto/yocto_cli.h
 @@ -48,7 +48,7 @@
@@ -56,8 +50,6 @@ index 867d0ec0..9e346aa3 100644
  
  // -----------------------------------------------------------------------------
  // USING DIRECTIVES
-diff --git a/libs/yocto/yocto_modelio.cpp b/libs/yocto/yocto_modelio.cpp
-index 64714bfc..4b1cd02b 100644
 --- a/libs/yocto/yocto_modelio.cpp
 +++ b/libs/yocto/yocto_modelio.cpp
 @@ -39,7 +39,7 @@
@@ -69,8 +61,6 @@ index 64714bfc..4b1cd02b 100644
  #include "yocto_color.h"
  
  // -----------------------------------------------------------------------------
-diff --git a/libs/yocto/yocto_sceneio.cpp b/libs/yocto/yocto_sceneio.cpp
-index ebe5b494..946f7c2d 100644
 --- a/libs/yocto/yocto_sceneio.cpp
 +++ b/libs/yocto/yocto_sceneio.cpp
 @@ -40,10 +40,13 @@
@@ -91,8 +81,6 @@ index ebe5b494..946f7c2d 100644
  #include "ext/tinyexr.h"
  #include "yocto_color.h"
  #include "yocto_geometry.h"
-diff --git a/libs/yocto/yocto_sceneio.h b/libs/yocto/yocto_sceneio.h
-index 5be22ef4..c9a0f1d9 100644
 --- a/libs/yocto/yocto_sceneio.h
 +++ b/libs/yocto/yocto_sceneio.h
 @@ -42,9 +42,6 @@
@@ -105,8 +93,6 @@ index 5be22ef4..c9a0f1d9 100644
  // -----------------------------------------------------------------------------
  // USING DIRECTIVES
  // -----------------------------------------------------------------------------
-diff --git a/libs/yocto_deprecated/CMakeLists.txt b/libs/yocto_deprecated/CMakeLists.txt
-index af0f2577..fe644f1d 100644
 --- a/libs/yocto_deprecated/CMakeLists.txt
 +++ b/libs/yocto_deprecated/CMakeLists.txt
 @@ -1,9 +1,16 @@
@@ -131,8 +117,6 @@ index af0f2577..fe644f1d 100644
 +        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 +        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
 +        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
-diff --git a/libs/yocto_deprecated/yocto_json.cpp b/libs/yocto_deprecated/yocto_json.cpp
-index aaffded4..4b7a0790 100644
 --- a/libs/yocto_deprecated/yocto_json.cpp
 +++ b/libs/yocto_deprecated/yocto_json.cpp
 @@ -39,7 +39,7 @@
