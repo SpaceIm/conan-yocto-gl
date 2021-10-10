@@ -1,0 +1,8 @@
+sources:
+  "4.2.0":
+    url: "https://github.com/xelatihy/yocto-gl/archive/refs/tags/v4.2.0.tar.gz"
+    sha256: "84b164e7d3720e77f41be0384288abdbc8b97f9d0c8591e073ee8be2aa903447"
+patches:
+  "4.2.0":
+    - patch_file: "patches/0001-fix-cmake-and-unvendor.patch"
+      base_path: "source_subfolder"

@@ -1,0 +1,146 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index df8ca9b7..16126cc9 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -26,6 +26,4 @@ if(GENERATOR_IS_MULTI_CONFIG)
+   set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR})
+ endif(GENERATOR_IS_MULTI_CONFIG)
+ 
+-add_subdirectory(exts)
+ add_subdirectory(libs)
+-add_subdirectory(apps)
+diff --git a/libs/yocto/CMakeLists.txt b/libs/yocto/CMakeLists.txt
+index 5f9b85a4..98b46e7e 100644
+--- a/libs/yocto/CMakeLists.txt
++++ b/libs/yocto/CMakeLists.txt
+@@ -11,13 +11,26 @@ add_library(yocto
+   yocto_sceneio.h yocto_sceneio.cpp
+   yocto_cli.h yocto_cli.cpp
+   yocto_parallel.h
+-  ext/stb_image.h ext/stb_image_resize.h ext/stb_image_write.h ext/stb_image.cpp
+-  ext/tinyexr.h ext/tinyexr.cpp ext/json.hpp ext/fast_float.h
++  ext/tinyexr.h ext/tinyexr.cpp
+ )
+ 
+-set_target_properties(yocto PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES)
++target_compile_features(yocto PUBLIC cxx_std_17)
+ 
+ target_include_directories(yocto PRIVATE ext/)
++find_package(nlohmann_json REQUIRED CONFIG)
++find_package(FastFloat REQUIRED CONFIG)
++target_link_libraries(yocto CONAN_PKG::stb nlohmann_json::nlohmann_json FastFloat::fast_float)
++
++include(GNUInstallDirs)
++install(FILES yocto_math.h yocto_color.h yocto_geometry.h yocto_noise.h
++              yocto_sampling.h yocto_shading.h yocto_modelio.h yocto_bvh.h
++              yocto_shape.h yocto_mesh.h yocto_image.h yocto_scene.h
++              yocto_trace.h yocto_sceneio.h yocto_cli.h yocto_parallel.h
++        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/yocto)
++install(TARGETS yocto
++        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
++        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
++        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
+ 
+ if(UNIX AND NOT APPLE)
+   find_package(Threads REQUIRED)
+diff --git a/libs/yocto/yocto_cli.h b/libs/yocto/yocto_cli.h
+index 867d0ec0..9e346aa3 100644
+--- a/libs/yocto/yocto_cli.h
++++ b/libs/yocto/yocto_cli.h
+@@ -48,7 +48,7 @@
+ #include "yocto_math.h"
+ 
+ #define JSON_USE_IMPLICIT_CONVERSIONS 0
+-#include "ext/json.hpp"
++#include <nlohmann/json.hpp>
+ 
+ // -----------------------------------------------------------------------------
+ // USING DIRECTIVES
+diff --git a/libs/yocto/yocto_modelio.cpp b/libs/yocto/yocto_modelio.cpp
+index 64714bfc..4b1cd02b 100644
+--- a/libs/yocto/yocto_modelio.cpp
++++ b/libs/yocto/yocto_modelio.cpp
+@@ -39,7 +39,7 @@
+ #include <unordered_set>
+ #include <utility>
+ 
+-#include "ext/fast_float.h"
++#include <fast_float/fast_float.h>
+ #include "yocto_color.h"
+ 
+ // -----------------------------------------------------------------------------
+diff --git a/libs/yocto/yocto_sceneio.cpp b/libs/yocto/yocto_sceneio.cpp
+index ebe5b494..946f7c2d 100644
+--- a/libs/yocto/yocto_sceneio.cpp
++++ b/libs/yocto/yocto_sceneio.cpp
+@@ -40,10 +40,13 @@
+ #include <unordered_map>
+ 
+ #define JSON_USE_IMPLICIT_CONVERSIONS 0
+-#include "ext/json.hpp"
+-#include "ext/stb_image.h"
+-#include "ext/stb_image_resize.h"
+-#include "ext/stb_image_write.h"
++#include <nlohmann/json.hpp>
++#define STB_IMAGE_IMPLEMENTATION
++#include <stb_image.h>
++#define STB_IMAGE_WRITE_IMPLEMENTATION
++#include <stb_image_write.h>
++#define STB_IMAGE_RESIZE_IMPLEMENTATION
++#include <stb_image_resize.h>
+ #include "ext/tinyexr.h"
+ #include "yocto_color.h"
+ #include "yocto_geometry.h"
+diff --git a/libs/yocto/yocto_sceneio.h b/libs/yocto/yocto_sceneio.h
+index 5be22ef4..c9a0f1d9 100644
+--- a/libs/yocto/yocto_sceneio.h
++++ b/libs/yocto/yocto_sceneio.h
+@@ -42,9 +42,6 @@
+ 
+ #include "yocto_scene.h"
+ 
+-#define JSON_USE_IMPLICIT_CONVERSIONS 0
+-#include "ext/json.hpp"
+-
+ // -----------------------------------------------------------------------------
+ // USING DIRECTIVES
+ // -----------------------------------------------------------------------------
+diff --git a/libs/yocto_deprecated/CMakeLists.txt b/libs/yocto_deprecated/CMakeLists.txt
+index af0f2577..fe644f1d 100644
+--- a/libs/yocto_deprecated/CMakeLists.txt
++++ b/libs/yocto_deprecated/CMakeLists.txt
+@@ -1,9 +1,16 @@
+ add_library(yocto_unsupported
+-  yocto_json.h yocto_json.cpp ext/json.hpp
++  yocto_json.h yocto_json.cpp
+ )
+ 
+-set_target_properties(yocto_unsupported PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES)
++target_compile_features(yocto_unsupported PUBLIC cxx_std_17)
+ 
+-target_include_directories(yocto_unsupported PRIVATE ext/)
+-target_include_directories(yocto_unsupported PUBLIC ${CMAKE_SOURCE_DIR}/libs)
+-target_link_libraries(yocto_unsupported PUBLIC yocto)
++target_include_directories(yocto_unsupported PUBLIC ${PROJECT_SOURCE_DIR}/libs)
++find_package(nlohmann_json REQUIRED CONFIG)
++target_link_libraries(yocto_unsupported PUBLIC yocto nlohmann_json::nlohmann_json)
++
++include(GNUInstallDirs)
++install(FILES yocto_json.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/yocto_deprecated)
++install(TARGETS yocto_unsupported
++        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
++        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
++        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
+diff --git a/libs/yocto_deprecated/yocto_json.cpp b/libs/yocto_deprecated/yocto_json.cpp
+index aaffded4..4b7a0790 100644
+--- a/libs/yocto_deprecated/yocto_json.cpp
++++ b/libs/yocto_deprecated/yocto_json.cpp
+@@ -39,7 +39,7 @@
+ #include <limits>
+ 
+ #define JSON_USE_IMPLICIT_CONVERSIONS 0
+-#include "ext/json.hpp"
++#include <nlohmann/json.hpp>
+ 
+ // -----------------------------------------------------------------------------
+ // USING DIRECTIVES
