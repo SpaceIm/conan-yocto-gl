@@ -98,3 +98,5 @@ class YoctoglConan(ConanFile):
         self.cpp_info.libs = ["yocto_unsupported", "yocto"]
         if self.settings.os in ["Linux", "FreeBSD"]:
             self.cpp_info.system_libs.append("pthread")
+        if self.settings.compiler == "gcc" and tools.Version(self.settings.compiler.version) < "9":
+            self.cpp_info.system_libs.append("stdc++fs")

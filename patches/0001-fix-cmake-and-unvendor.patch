@@ -9,7 +9,7 @@
 -add_subdirectory(apps)
 --- a/libs/yocto/CMakeLists.txt
 +++ b/libs/yocto/CMakeLists.txt
-@@ -11,13 +11,26 @@ add_library(yocto
+@@ -11,13 +11,33 @@ add_library(yocto
    yocto_sceneio.h yocto_sceneio.cpp
    yocto_cli.h yocto_cli.cpp
    yocto_parallel.h
@@ -24,7 +24,14 @@
  target_include_directories(yocto PRIVATE ext/)
 +find_package(nlohmann_json REQUIRED CONFIG)
 +find_package(FastFloat REQUIRED CONFIG)
-+target_link_libraries(yocto CONAN_PKG::stb nlohmann_json::nlohmann_json FastFloat::fast_float)
++target_link_libraries(yocto
++    PUBLIC
++        nlohmann_json::nlohmann_json
++    PRIVATE
++        CONAN_PKG::stb
++        FastFloat::fast_float
++        $<$<AND:$<CXX_COMPILER_ID:GNU>,$<VERSION_LESS:$<CXX_COMPILER_VERSION>,9.0>>:stdc++fs>
++)
 +
 +include(GNUInstallDirs)
 +install(FILES yocto_math.h yocto_color.h yocto_geometry.h yocto_noise.h
@@ -95,7 +102,7 @@
  // -----------------------------------------------------------------------------
 --- a/libs/yocto_deprecated/CMakeLists.txt
 +++ b/libs/yocto_deprecated/CMakeLists.txt
-@@ -1,9 +1,16 @@
+@@ -1,9 +1,22 @@
  add_library(yocto_unsupported
 -  yocto_json.h yocto_json.cpp ext/json.hpp
 +  yocto_json.h yocto_json.cpp
@@ -109,7 +116,13 @@
 -target_link_libraries(yocto_unsupported PUBLIC yocto)
 +target_include_directories(yocto_unsupported PUBLIC ${PROJECT_SOURCE_DIR}/libs)
 +find_package(nlohmann_json REQUIRED CONFIG)
-+target_link_libraries(yocto_unsupported PUBLIC yocto nlohmann_json::nlohmann_json)
++target_link_libraries(yocto_unsupported
++    PUBLIC
++        yocto
++    PRIVATE
++        nlohmann_json::nlohmann_json
++        $<$<AND:$<CXX_COMPILER_ID:GNU>,$<VERSION_LESS:$<CXX_COMPILER_VERSION>,9.0>>:stdc++fs>
++)
 +
 +include(GNUInstallDirs)
 +install(FILES yocto_json.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/yocto_deprecated)
