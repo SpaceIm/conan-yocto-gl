@@ -9,7 +9,7 @@
 -add_subdirectory(apps)
 --- a/libs/yocto/CMakeLists.txt
 +++ b/libs/yocto/CMakeLists.txt
-@@ -11,13 +11,33 @@ add_library(yocto
+@@ -11,13 +11,31 @@ add_library(yocto
    yocto_sceneio.h yocto_sceneio.cpp
    yocto_cli.h yocto_cli.cpp
    yocto_parallel.h
@@ -25,12 +25,10 @@
 +find_package(nlohmann_json REQUIRED CONFIG)
 +find_package(FastFloat REQUIRED CONFIG)
 +target_link_libraries(yocto
-+    PUBLIC
-+        nlohmann_json::nlohmann_json
-+    PRIVATE
-+        CONAN_PKG::stb
-+        FastFloat::fast_float
-+        $<$<AND:$<CXX_COMPILER_ID:GNU>,$<VERSION_LESS:$<CXX_COMPILER_VERSION>,9.0>>:stdc++fs>
++    nlohmann_json::nlohmann_json
++    CONAN_PKG::stb
++    FastFloat::fast_float
++    $<$<AND:$<CXX_COMPILER_ID:GNU>,$<VERSION_LESS:$<CXX_COMPILER_VERSION>,9.0>>:stdc++fs>
 +)
 +
 +include(GNUInstallDirs)
